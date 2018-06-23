@@ -8,6 +8,16 @@
     *, *:before, *:after {
       box-sizing: inherit;
     }
+    .wrapper {
+      display: flex; 
+      flex-flow: column nowrap; 
+      justify-content: center;
+    }
+    .wrapper > .title {
+      text-align: center;
+      color: rgba(98, 98, 98, 0.7);
+    }
+
     input {
       width: 100%;
       padding:20px;
@@ -26,6 +36,11 @@
       border-radius: 5px;
       font-size: 40px;
       box-shadow: 0 0 5px rgba(0, 0, 0, 0.12), inset 0 0 2px rgba(0, 0, 0, 0.19);
+    }
+
+    input.search:disabled {
+      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
+      border: 10px solid #f7f7f793;
     }
 
     .search-form {
