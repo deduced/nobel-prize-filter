@@ -12,6 +12,7 @@
       display: flex; 
       flex-flow: column nowrap; 
       align-items: center;
+      padding-top: 20px;
     }
     .wrapper > .title {
       text-align: center; 
