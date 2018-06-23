@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Nobel Prize Search</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="Start typing...">
+    <ul class="suggestions">
+      <li>Filter by Laureate surname</li>
+      <li>or country</li>
+      <li>or city</li>
+      <li>or nobel prize category</li>
+    </ul>
+  </form>
+  <script>
+    const endpoint = 'http://api.nobelprize.org/v1/laureate.json';
+    const laureates = [];
+
+    fetch(endpoint)
+      .then(blob => blob.json())
+      .then(data => laureates.push(...data.laureates));
+
+    function findMatches(wordToMatch, laureates) {
+      return laureates.filter(laureate => {
+        const regex = new RegExp(wordToMatch, 'gi');
+
+        try {
+          return laureate.surname.match(regex) ||
+            laureate.bornCity.match(regex) ||
+            laureate.bornCountry.match(regex) ||
+            laureate.prizes
+              .map(prize => prize.category)
+              .some(category => category.match(regex));
+
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    }
+
+    function displayMatches() {
+      const matchingLaureates = findMatches(this.value, laureates);
+      const html = matchingLaureates.map(laureate => {
+        const regex = new RegExp(this.value, 'gi');
+        const surname = laureate.surname.replace(regex, `<span class="hl">${this.value}</span>`);
+        const country = laureate.bornCountry.replace(regex, `<span class="hl">${this.value}</span>`);
+        const city = laureate.bornCity.replace(regex, `<span class="hl">${this.value}</span>`);
+        const prizeCategories = laureate.prizes
+          .map(prize => prize.category).join(', ')
+          .replace(regex, `<span class="hl">${this.value}</span>`);
+
+        return `
+          <li>
+            <span class="name">${laureate.firstname} ${surname} - ${city}, ${country} </span>
+            <span class="prize-category">${prizeCategories}</span>
+          </li>
+        `;
+      }).join('');
+      suggestions.innerHTML = html;
+    }
+
+    const searchInput = document.querySelector('.search');
+    const suggestions = document.querySelector('.suggestions');
+
+    searchInput.addEventListener('keyup', displayMatches);
+  </script>
+</body>
+
+</html>
