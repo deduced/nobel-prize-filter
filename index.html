@@ -8,23 +8,46 @@
 </head>
 
 <body>
-
-  <form class="search-form">
-    <input type="text" class="search" placeholder="Start typing...">
-    <ul class="suggestions">
-      <li>Filter by Laureate surname</li>
-      <li>or country</li>
-      <li>or city</li>
-      <li>or nobel prize category</li>
-    </ul>
-  </form>
+  <div class="wrapper">
+    <h1 class="title">Nobel Prize Laureate Search</h1>
+    <form class="search-form">
+      <input type="text" class="search" placeholder="Disabled while loading..." disabled>
+      <ul class="suggestions">
+        <li>Filter by Laureate surname</li>
+        <li>or country</li>
+        <li>or city</li>
+        <li>or nobel prize category</li>
+      </ul>
+    </form>
+  </div>
   <script>
     const endpoint = 'http://api.nobelprize.org/v1/laureate.json';
     const laureates = [];
+    const searchInput = document.querySelector('.search');
+    const suggestions = document.querySelector('.suggestions');
 
-    fetch(endpoint)
-      .then(blob => blob.json())
-      .then(data => laureates.push(...data.laureates));
+
+    (async function fetchLaureates(endpoint) {
+      try {
+        const fetchResult = fetch(new Request(endpoint));
+        const response = await fetchResult;
+        if (response.ok) {
+          const jsonData = await response.json();
+          laureates.push(...jsonData.laureates);
+          searchInput.placeholder = "Start typing...";
+          searchInput.disabled = false;
+        } else {
+          console.log(response.status);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    })(endpoint);
+
+
+    // fetch(endpoint)
+    //   .then(blob => blob.json())
+    //   .then(data => laureates.push(...data.laureates));
 
     function findMatches(wordToMatch, laureates) {
       return laureates.filter(laureate => {
@@ -64,9 +87,6 @@
       }).join('');
       suggestions.innerHTML = html;
     }
-
-    const searchInput = document.querySelector('.search');
-    const suggestions = document.querySelector('.suggestions');
 
     searchInput.addEventListener('keyup', displayMatches);
   </script>
